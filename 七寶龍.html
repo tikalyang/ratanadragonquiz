@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>白龍母的六道靈魂試煉</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --accent-color: #7ba3a8;
+            --btn-hover: #5a8287;
+        }
+
+        body {
+            font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.8;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            transition: all 0.4s ease;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            letter-spacing: 2px;
+            color: #4a6b6c;
+            margin-bottom: 30px;
+        }
+
+        .quiz-img {
+            width: 100%;
+            height: auto;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .scene-title {
+            font-weight: bold;
+            color: #8fa89b;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 17px;
+            margin-bottom: 30px;
+            text-align: justify;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .option-btn {
+            background: #f8faf9;
+            border: 1px solid #e2e8e6;
+            padding: 16px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 15px;
+            color: var(--text-color);
+            transition: all 0.2s ease;
+            line-height: 1.6;
+        }
+
+        .option-btn:hover {
+            background-color: #edf2f0;
+            border-color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        .start-btn {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            letter-spacing: 2px;
+            transition: background 0.2s;
+        }
+
+        .start-btn:hover {
+            background-color: var(--btn-hover);
+        }
+
+        .result-header {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #4a6b6c;
+            margin-bottom: 20px;
+        }
+
+        .gift-tag {
+            display: block;
+            text-align: center;
+            font-size: 28px;
+            margin: 10px 0;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hide { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container" id="quiz-box">
+    <!-- 開始畫面 -->
+    <div id="start-screen" class="fade-in">
+        <h1>拉塔納七寶白龍<br>【六道靈魂試煉】</h1>
+        <!-- 補上開頭配圖：請把下面的網址換成你的封面圖網址 -->
+        <img class="quiz-img" src="https://images.plurk.com/6bts4LmWfstxZXXsjLVhT0.png" alt="白龍母的試煉">
+        <p class="question-text">
+            
+醒來時，你發現自己站在一條由星光與白霧交織而成的神聖走廊上。這裡沒有時間的概念，只有遠處傳來空靈的梵音與淡淡的蓮花香。<br><br>
+            傳說中，這是超脫於所有位面之上的神明—「拉塔納七寶白龍」的試煉領域，龍神喜好親近心善之人，並依據善人的特質分送身上的七寶。然而在見到白龍母之前，你必須先穿過由你靈魂深處投射出的六個異世界幻境……
+<br>※本測驗使用gemini協力※<br>
+※閱讀原作故事：https://cxc.today/zh/@tikalyang/book/20206<br>
+        </p>
+        <button class="start-btn" onclick="startQuiz()">開啟試煉</button>
+    </div>
+
+    <!-- 測驗內容 -->
+    <div id="quiz-screen" class="hide">
+        <div class="scene-title" id="scene-title">幻境之一</div>
+        <div class="question-text" id="question-text">題目載入中...</div>
+        <div class="options-list" id="options-list"></div>
+    </div>
+
+    <!-- 結果畫面 -->
+    <div id="result-screen" class="hide">
+        <div class="result-header" id="result-title">試煉終點</div>
+        <!-- 結局配圖位置 -->
+        <img class="quiz-img" id="result-img" src="" alt="試煉結果">
+        <div class="gift-tag" id="gift-tag">🪷</div>
+        <div class="question-text" id="result-text">結果載入中...</div>
+        <button class="start-btn" style="margin-top: 30px;" onclick="restartQuiz()">重新修行</button>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        {
+            title: "Q1. 【幻境一：突如其來的魔獸襲擊】",
+            text: "你來到一個平靜的精靈村落，突然巨大的地底魔獸破土而出，村莊瞬間陷入火海。在一片混亂的逃難人潮中，一隻幼小的精靈在慌亂中摔倒，魔獸巨大的腳掌正朝牠踏下去。這時你的第一反應是？",
+            options: [
+                { text: "順勢抓起手邊重物朝魔獸眼睛丟去，試圖把怪物的注意力吸過來，為周圍的人爭取時間。", type: "gold" },
+                { text: "衝進死角，張開雙臂將精靈死死護在懷裡並試圖逃脫，最壞打算是當肉盾準備承受衝擊。", type: "tridacna" },
+                { text: "迅速往精靈的方向撤退，一邊冷靜地在沿途鋪設遲滯魔獸速度的防禦術式或障礙物。", type: "glass" },
+                { text: "評估戰力差距，如果覺得留在原地只是無謂的犧牲。你會冷靜地跟隨人群的撤退動線快步離開，不逞英雄。", type: "d" }
+            ]
+        },
+        {
+            title: "Q2. 【幻境二：不夠清白的難民】",
+            text: "逃離戰場後，你遇到了一群同樣在流離失所的低階半獸人。他們飢寒交迫，但因為種族偏見以及過往的惡劣形象，沒有任何公會或城鎮收留。你精疲力竭、物資所剩無幾，此時你會怎麼做？",
+            options: [
+                { text: "默默點燃篝火後，不發一語地將所剩不多的糧食放在某個距離之外，讓他們自己拿取。", type: "agate" },
+                { text: "不發一語，拿出僅存的草藥幫傷者塗抹，拍拍幼者的頭然後離開。", type: "silver" },
+                { text: "拿出你的冒險者日記本，將他們的名字和遭遇一一記錄下來，帶著份記錄，等盛世來到時提出來好好討論。", type: "amber" },
+                { text: "世界各處每天都在發生悲劇，你沒義務也沒能力背負他人的命運。拉低斗篷保持距離，在遠處安靜地度過一夜。", type: "d" }
+            ]
+        },
+        {
+            title: "Q3. 【幻境三：地下城裡的宿敵】",
+            text: "你來到一座古老地下城深處。在染血的祭壇前，你發現了一個身受詛咒、動彈不得的黑闇騎士—而他正是當初毀掉你的家鄉、害你顛沛流離多年的死敵。此時詛咒正瘋狂蠶食他的生命，你會？",
+            options: [
+                { text: "驅動光之法術，去化解那個正在折磨他的詛咒。你並不指望他道歉，只想終結這份痛苦。", type: "rose" },
+                { text: "拔出武器壓制住他的行動，你不會殺他，但他必須活著回去接受審判。", type: "glass" },
+                { text: "蹲下身，純粹以一個醫者姿態，先用淨化法術幫他止血、減輕詛咒帶來的肉體折磨。", type: "silver" },
+                { text: "不出手給予致命一擊，但也不打算耗費魔力去拯救他。靜靜地任由因果法則自行決定他的生死。", type: "d" }
+            ]
+        },
+        {
+            title: "Q4. 【幻境四：聖城的汙名與孤立】",
+            text: "奇幻冒險的旅途中，你莫名被曾經的盟友陷害，整個聚落、聖殿與公會一夜之間都將你列為「叛徒」。昔日並肩作戰的夥伴、你曾拯救過的村民，都用懷疑與鄙夷的眼神看著你。面對這種被整個世界孤立的絕境，你會？",
+            options: [
+                { text: "既然正常的城鎮不歡迎你，你索性前往最混亂、最被歧視的邊境地帶，在那裡重新建立一個新的互助秩序。", type: "agate" },
+                { text: "徹底切斷與外界的所有聯絡，從此你的劍與魔法只為了保護身邊那個唯一還願意相信你、陪伴你的靈魂契約夥伴。", type: "amber" },
+                { text: "脫下華麗的冒險者斗篷，找個無人的深山木屋隱居。你照樣過日子，不解釋、不辯駁，隨世人怎麼說。", type: "tridacna" },
+                { text: "看透了人性的盲目與集體盲從。你決定不再為任何人戰鬥，從此改名換姓，徹底告別這個冒險者的世界。", type: "d" }
+            ]
+        },
+        {
+            title: "Q5. 【幻境五：廢墟中的祈願】",
+            text: "世界因為戰火而陷入了大饑荒，聖殿的長老們與世人此時終於發現你是被冤枉的，他們羞愧地跪在你面前，懇求你用你強大的神聖力量去拯救外面正在挨餓、受苦的凡人們。看著這些曾傷害過你的人，你會？",
+            options: [
+                { text: "什麼話也沒說，轉身直接走向前線，將所有的神聖魔力化作巨大的屏障，替凡間擋下正在逼近的敵軍與天災。", type: "gold" },
+                { text: "嘆了一口氣，接受了他們的道歉。隨後將力量化為漫天甘霖去滋潤枯萎的大地，你選擇用實際的繁榮來消融眾人的成見。", type: "rose" },
+                { text: "要求長老們先簽署一份公開的「道歉聲明」，並在聖城中央廣場宣讀後，你才願意啟動所有的救援禦敵模式。", type: "glass" },
+                { text: "傷害已經造成，此時的跪求只是為了眼前的利益。你拒絕了他們的請求，因為你認為每個人都該為自己的盲目承擔代價。", type: "d" }
+            ]
+        },
+        {
+            title: "Q6. 【幻境六：創世神座的抉擇】",
+            text: "幻境來到終點。你穿過重重迷霧，登上了世界樹頂端的創世神座。只要你坐上去，就能獲得重塑世界法則的最高權限。看著下方那個殘破的凡間，你握緊雙拳，心中最迫切的願望是？",
+            options: [
+                { text: "重塑世界的自然法則，讓所有的疾病、詛咒與肉體痛苦在發生的那一刻，都能得到大自然的自我療癒與淨化。", type: "silver" },
+                { text: "剝奪大型帝國的壟斷權，將創世神力分散成微小的祝福，平均賜予世上每一個弱小、甚至瀕臨滅絕的稀有種族。", type: "agate" },
+                { text: "鎖定這個神座的時間軸。你將自己永恆地束縛在這裡，因為你之所以走到這裡，※僅僅為了履行當初與某個人的約定，維持世界的穩定。", type: "amber" },
+                { text: "關閉世界樹與凡間的通道，不再插手人間的紛擾。讓世界依照自己的興衰生死去運轉，神明也該有神明的清淨。", type: "d" }
+            ]
+        }
+    ];
+
+    // 結局資料庫（請在 img 欄位放入你各個寶物與修行結局的專屬圖片網址）
+    const outcomes = {
+        gold: { title: "黃金之善：【開拓與守護的勇者】", icon: "👑 黃 金", img: "https://images.plurk.com/63b9wQfd9W1E6VopeuRmS7.jpg", text: "善人特質：站在前線保衛弱小。你擁有無與倫比的勇氣，當黑暗與危難來臨時，你總是第一個拔劍、用脊樑擋在弱者身前的人。白龍母贈禮：黃金。願這份璀璨的力量，成為你劈開黑暗、守護弱小的最強堅盾。" },
+        silver: { title: "白銀之善：【撫平傷痛的療癒者】", icon: "🥈 白 銀", img: "https://images.plurk.com/62CjD9jfT2ufWFQxZp5BKE.jpg", text: "善人特質：撫平傷痛、治癒他人。你具備極高的同理心，能感知他人的痛苦，並用溫柔的言語或行動包紮靈魂的傷口。白龍母贈禮：白銀。願這份純淨的月華之光，能持續滋養你與你所珍視的每個生命。" },
+        glass: { title: "琉璃之善：【追尋真理的執法者】", icon: "🔮 琉 璃", img: "https://images.plurk.com/7Em6GUBfQDtW7GVxF3qLe.jpg", text: "善人特質：堅守良知與真理. 在混沌的世界中，你眼底容不下沙子，黑白分明，永遠站在公正與真理的這一邊。白龍母贈禮：琉璃。願這份通透與澄明，照亮你前行的道路，不被世俗的虛偽所蒙蔽。" },
+        tridacna: { title: "硨磲之善：【堅忍不拔的修行者】", icon: "🐚 硨 磲", img: "https://images.plurk.com/3m8ju3SV0xVYOi5jWNJgBN.jpg", text: "善人特質：忍辱負重、不畏流言。你擁有極強的心理韌性，即使外界風雨交加、環境險惡，你依然能在一隅默默承受並穩步耕耘。白龍母贈禮：硨磲。願這份沉穩與潔白，庇護你內心的平靜，不受外界嘈雜干擾。" },
+        rose: { title: "玫瑰之善：【神聖慈悲的感化者】", icon: "🌹 紅寶石", img: "https://images.plurk.com/RvXBRo6oYF2m5SL86yF2F.jpg", text: "善人特質：傷痛下仍能原諒與感化。這是世間最難得的「大善」。你歷經痛楚，卻沒有讓痛苦將你變成怪物，反而開出了原諒與救贖的花朵。白龍母贈禮：玫瑰（紅寶石的意思）。願這炙熱的血紅之寶，成為你心中永不熄滅的慈悲之火。" },
+        agate: { title: "瑪瑙之善：【微光共好的擺渡人】", icon: "🪵 瑪 瑙", img: "https://images.plurk.com/6i3GlLBj0O1gIJe0OJAIwc.jpg", text: "善人特質：孤獨弱勢卻仍盡己之力與人共好。你或許不是最耀眼、最強大的人，甚至自己也過得很辛苦，但你散發的微光，卻溫暖了身邊每一個同樣孤獨的靈魂。白龍母贈禮：瑪瑙。願這份沉實而色彩斑斕的福澤，讓你與世界溫柔共振。" },
+        amber: { title: "琥珀之善：【至死不渝的守護靈】", icon: "🍁 琥 珀", img: "https://images.plurk.com/5javmnbDBDPTdqqnfIiBij.jpg", text: "善人特質：至死不渝的忠誠。你的愛與信念一旦定下來，便是千百年的時光流轉也不會改變。你是最值得信賴的夥伴。白龍母贈禮：琥珀。將時光凝結、將忠誠永恆。願這份溫潤的遠古之寶，見證你靈魂的誓言。" },
+        d_end: { 
+            title: "重回紅塵的修行", 
+            icon: "☁️ 龍神垂眼", 
+            img: "https://images.plurk.com/h6BLUQnfK0k7wtTSoLgEr.jpg",
+            text: "幻境消散，創世神座、聖殿與地下城都化為虛無。你抬起頭，看見了那尊傳說中的拉塔納七寶白龍。祂龐大而莹白的軀體在七彩氤氳中若隱若現，但那雙澄澈的龍眸裡，此刻盛滿了淡淡的遺憾與溫柔的憐憫。<br><br>祂沒有轉身飛走，也沒有降下懲罰。祂傷只是微微垂下頭顱，伸出溫熱瑩白的龍爪，輕輕拂過你疲憊的頭頂。那一瞬間，你感覺到心頭積壓的那些因受傷而生出的尖銳、因害怕再度被背叛而長出的冷漠防備，都被祂溫柔地吸納了一部分。<br><br>「迷途的旅人啊，異世界的風霜太冷，你的靈魂為了保護自己，長出了太沉重的刺。此時的你，還無法承載七寶的重量。」<br><br>龍神微微嘆息，隨後拍打著雙翼緩緩升空，融入了璀璨的雲海之中。祂沒有留下寶物，因為祂知道，你現在需要的不是獎賞，而是好好休息、與自己和解的時間。<br><br>祂將你送回了最初的起點。漫長的修行才剛開始，那些疲憊、自保與迷茫並不是罪過，而是你拼盡全力活下來的證明。<br><br><hr style='border:0; border-top:1px dashed #cedbd6; margin:20px 0;'><b style='color:#4a6b6c;'>【白龍母留下的指引微光】</b><br>" 
+        }
+    };
+
+    let currentQuestion = 0;
+    let scores = { gold: 0, silver: 0, glass: 0, tridacna: 0, rose: 0, agate: 0, amber: 0, d: 0 };
+
+    function startQuiz() {
+        document.getElementById('start-screen').classList.add('hide');
+        document.getElementById('quiz-screen').classList.remove('hide');
+        showQuestion();
+    }
+
+    function showQuestion() {
+        if (currentQuestion >= questions.length) {
+            calculateResult();
+            return;
+        }
+
+        const q = questions[currentQuestion];
+        document.getElementById('scene-title').innerText = `試煉幻境 ${currentQuestion + 1} / 6`;
+        document.getElementById('question-text').innerText = q.text;
+
+        const optionsContainer = document.getElementById('options-list');
+        optionsContainer.innerHTML = '';
+
+        const shuffledOptions = [...q.options].sort(() => Math.random() - 0.5);
+
+        shuffledOptions.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn fade-in';
+            btn.innerText = opt.text;
+            btn.onclick = () => selectOption(opt.type);
+            optionsContainer.appendChild(btn);
+        });
+    }
+
+    function selectOption(type) {
+        scores[type]++;
+        currentQuestion++;
+        
+        const box = document.getElementById('quiz-box');
+        box.style.opacity = '0';
+        setTimeout(() => {
+            showQuestion();
+            box.style.opacity = '1';
+        }, 200);
+    }
+
+    function calculateResult() {
+        document.getElementById('quiz-screen').classList.add('hide');
+        document.getElementById('result-screen').classList.remove('hide');
+
+        if (scores.d >= 3) {
+            displayResult('d_end');
+            return;
+        }
+
+        let maxType = 'gold';
+        let maxScore = -1;
+
+        for (const key in scores) {
+            if (key !== 'd' && scores[key] > maxScore) {
+                maxScore = scores[key];
+                maxType = key;
+            }
+        }
+
+        displayResult(maxType);
+    }
+
+    function displayResult(type) {
+        const result = outcomes[type];
+        document.getElementById('result-title').innerText = result.title;
+        document.getElementById('gift-tag').innerText = result.icon;
+        
+        // 動態替換結局圖
+        document.getElementById('result-img').src = result.img;
+        
+        let finalText = result.text;
+
+        if (type === 'd_end') {
+            let maxType = 'gold';
+            let maxScore = -1;
+            
+            const tooltips = {
+                gold: "不過，龍神離去前的目光中，仍映照出你隱約的<b>『勇者潛質』</b>。當你有一天願意放下防備、重新試著站在前線守護更弱小的存在時，黃金的盾牌將為你而生。",
+                silver: "不過，龍神離去前的目光中，仍映照出你隱約的<b>『療癒者潛質』</b>。你其實擁有一顆能感知他人痛苦的溫柔靈魂。當你試著用溫度去包紮傷口、治癒他人時，白銀的光芒將重新為你亮起。",
+                glass: "不過，龍神離去前的目光中，仍映照出你隱約的<b>『執法者潛質』</b>。你骨子裡渴望著絕對的公正與秩序。當你不再用冷漠隔絕世界，而是試著用規矩與真理去匡正不公時，琉璃之光將與你共鳴。",
+                tridacna: "不過，龍神離去前的目光中，仍映照出你隱約的<b>『修行者潛質』</b>。你擁有極強的內在韌性。當你不再將這份力量用於消極抽離，而是試著在風雨中沉澱、包容世間嘈雜時，硨磲的純潔將為你綻放。",
+                rose: "不過，龍神離去前的目光中，仍映照出你隱約的<b>『感化者潛質』</b>。那是最難得的大慈悲。當你有一天能跨越受傷的陰影，試著去原諒與消融世界的惡意時，玫瑰紅寶石的慈悲之火將燒盡所有煞氣。",
+                agate: "不過，龍神離去前的目光中，仍映照出你隱約的<b>『擺渡人潛質』</b>。你習慣在暗處散發微光。當你試著走出自我的孤獨、用僅存的力量與那些同樣弱勢的人溫柔共振時，瑪瑙的福澤將重回你的身邊。",
+                amber: "不過，龍神離去前的目光中 nudge，仍映照出你隱約的<b>『守護靈潛質』</b>。你一旦認準便至死不渝。當你遇到那個值得你交付一切的信念或夥伴，並重新履行靈魂契約時，琥珀的永恆時光將見證你的誓言。"
+            };
+
+            for (const key in scores) {
+                if (key !== 'd' && scores[key] > maxScore) {
+                    maxScore = scores[key];
+                    maxType = key;
+                }
+            }
+            
+            finalText += tooltips[maxType] + "<br><br>只要心燈不滅，善意終會在廢墟中重新萌芽。當你學會再次溫柔看待世界時，白龍母隨時會再次降臨。";
+        }
+
+        document.getElementById('result-text').innerHTML = finalText;
+    }
+
+    function restartQuiz() {
+        currentQuestion = 0;
+        scores = { gold: 0, silver: 0, glass: 0, tridacna: 0, rose: 0, agate: 0, amber: 0, d: 0 };
+        document.getElementById('result-screen').classList.add('hide');
+        document.getElementById('start-screen').classList.remove('hide');
+    }
+</script>
+
+</body>
+</html>
