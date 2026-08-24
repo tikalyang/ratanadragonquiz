@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>打屁股小遊戲</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #fff0f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .score-board {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ff6b81;
+            margin-bottom: 15px;
+        }
+
+        .game-container {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .character-img {
+            width: 280px;
+            height: auto;
+            display: block;
+            transition: transform 0.05s ease;
+        }
+
+        .character-img.slapped {
+            transform: scale(0.93) rotate(-3deg);
+        }
+
+        .pop-text {
+            position: absolute;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ff4757;
+            pointer-events: none;
+            animation: floatUp 0.6s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-40px) scale(1.2); }
+        }
+
+        .btn-finish {
+            margin-top: 25px;
+            padding: 12px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            background-color: #ff4757;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(255, 71, 87, 0.3);
+            transition: transform 0.1s, background-color 0.2s;
+        }
+
+        .btn-finish:active {
+            transform: scale(0.95);
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .modal-card {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            width: 80%;
+            max-width: 320px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            animation: popIn 0.3s ease-out;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.7); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-title { font-size: 1.8rem; color: #ff4757; margin-bottom: 10px; }
+        
+        /* 結算圖樣式 */
+        .end-img {
+            width: 180px;
+            height: auto;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+
+        .modal-score { font-size: 2.2rem; font-weight: bold; color: #2ed573; margin: 5px 0; }
+        .modal-rank { font-size: 1.1rem; color: #57606f; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+    <div class="score-board">連擊次數: <span id="score">0</span></div>
+
+    <div class="game-container" id="gameArea">
+        <img src="character.gif" alt="小惡魔" class="character-img" id="character">
+    </div>
+
+    <button class="btn-finish" onclick="finishGame()">收手！結算成績</button>
+
+    <!-- 結算彈窗 -->
+    <div class="modal-overlay" id="resultModal">
+        <div class="modal-card">
+            <div class="modal-title">🎉 懲罰結束！</div>
+            
+            <!-- 加入自己畫的 end.jpg -->
+            <img src="end.jpg" alt="結算圖" class="end-img">
+
+            <div>你總共打了</div>
+            <div class="modal-score" id="finalScore">0 下</div>
+            <div class="modal-rank" id="rankText">稱號：輕撫大師</div>
+            <button class="btn-finish" onclick="restartGame()">再玩一次</button>
+        </div>
+    </div>
+
+    <script>
+        let score = 0;
+        let isEnded = false;
+        const scoreEl = document.getElementById('score');
+        const character = document.getElementById('character');
+        const gameArea = document.getElementById('gameArea');
+        const popTexts = ["啪！", "連擊！", "+1", "好痛！", "❤️", "停手！"];
+
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx;
+
+        function playSlapSound() {
+            if (!audioCtx) audioCtx = new AudioContext();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            const bufferSize = audioCtx.sampleRate * 0.08;
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = Math.random() * 2 - 1;
+            }
+
+            const noise = audioCtx.createBufferSource();
+            noise.buffer = buffer;
+
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(1000, audioCtx.currentTime);
+
+            const gain = audioCtx.createGain();
+            gain.gain.setValueAtTime(1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            noise.start();
+        }
+
+        function slap(e) {
+            if (isEnded) return;
+
+            score++;
+            scoreEl.textContent = score;
+
+            playSlapSound();
+
+            character.classList.add('slapped');
+            setTimeout(() => character.classList.remove('slapped'), 50);
+
+            createPopText(e);
+        }
+
+        function createPopText(e) {
+            const rect = gameArea.getBoundingClientRect();
+            const x = e.clientX ? e.clientX - rect.left : rect.width / 2;
+            const y = e.clientY ? e.clientY - rect.top : rect.height / 2;
+
+            const pop = document.createElement('div');
+            pop.className = 'pop-text';
+            pop.textContent = popTexts[Math.floor(Math.random() * popTexts.length)];
+            pop.style.left = `${x - 20}px`;
+            pop.style.top = `${y - 20}px`;
+
+            gameArea.appendChild(pop);
+            setTimeout(() => pop.remove(), 600);
+        }
+
+        function finishGame() {
+            isEnded = true;
+            document.getElementById('finalScore').textContent = `${score} 下`;
+
+            let rank = "";
+            if (score === 0) rank = "稱號：佛系觀賞者 😇";
+            else if (score < 30) rank = "稱號：溫柔摸摸手 🐾";
+            else if (score < 100) rank = "稱號：小惡魔剋星 ⚡";
+            else if (score < 200) rank = "稱號：無情打屁屁機器 🤖";
+            else rank = "稱號：手速超人！小惡魔求饒了 👑";
+
+            document.getElementById('rankText').textContent = rank;
+            document.getElementById('resultModal').style.display = 'flex';
+        }
+
+        function restartGame() {
+            score = 0;
+            isEnded = false;
+            scoreEl.textContent = score;
+            document.getElementById('resultModal').style.display = 'none';
+        }
+
+        gameArea.addEventListener('pointerdown', slap);
+    </script>
+</body>
+</html>
